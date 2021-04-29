@@ -42,24 +42,16 @@ class EtlPipelineGraph {
   EtlPipelineGraph({this.id, this.graphItems});
 
   factory EtlPipelineGraph.fromJson(Map<String, dynamic> json) {
-    print('EtlJsonGraph.fromJson graph id:${json['@id']}');
-    print('EtlJsonGraph json type: ${json.runtimeType}');
-
     var graphItems = (json['@graph'] as List).map((graphItem) {
       if ((graphItem['@type'] as List).contains(pipelineType)) {
-        print('typ pip');
         return EtlPipelineItem.fromJson(graphItem);
       } else if ((graphItem['@type'] as List).contains(componentType)) {
-        print('typ com');
         return EtlComponentItem.fromJson(graphItem);
       } else if ((graphItem['@type'] as List).contains(connectionType)) {
-        print('typ con');
         return EtlConnectionItem.fromJson(graphItem);
       } else if ((graphItem['@type'] as List).contains(vertexType)) {
-        print('typ ver');
         return EtlVertexItem.fromJson(graphItem);
       }
-      print('${graphItem['@type']}');
       return null;
     }).toList();
     graphItems.removeWhere((value) => value == null);
@@ -74,7 +66,7 @@ abstract class EtlPipelineGraphItem {}
 
 class EtlPipelineItem extends EtlPipelineGraphItem {
   final String id;
-  final List<String> label;
+  final String label;
 
   EtlPipelineItem({
     this.id,
@@ -84,8 +76,7 @@ class EtlPipelineItem extends EtlPipelineGraphItem {
   factory EtlPipelineItem.fromJson(Map<String, dynamic> json) {
     return EtlPipelineItem(
       id: json['@id'],
-      label:
-          (json[labelType] as List).map((e) => e['@value'].toString()).toList(),
+      label: (json[labelType] as List).first['@value'],
     );
   }
 }

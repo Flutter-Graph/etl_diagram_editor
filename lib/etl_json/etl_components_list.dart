@@ -11,6 +11,7 @@ String inputConfPortType =
     'http://linkedpipes.com/ontology/RuntimeConfiguration';
 String inputPortType = 'http://linkedpipes.com/ontology/Input';
 String outputPortType = 'http://linkedpipes.com/ontology/Output';
+String taskListPortType = 'http://linkedpipes.com/ontology/TaskList';
 
 String portBindingType = 'http://linkedpipes.com/ontology/binding';
 String portTypeSubType = 'http://linkedpipes.com/ontology/dataUnit';
@@ -28,7 +29,6 @@ class EtlComponentsJsonObject {
   }
 
   EtlComponentsGraph getComponentGraphFromTemplateId(String templateId) {
-    print('getComponentGraphFromTemplateId');
     return graphList.firstWhere((graph) {
       if (graph.graphItems.whereType<EtlJarTemplateItem>().isNotEmpty) {
         if (graph.graphItems.whereType<EtlJarTemplateItem>().single.id ==
@@ -44,14 +44,6 @@ class EtlComponentsJsonObject {
       return false;
     });
   }
-
-  // EtlComponentsGraph searchForTemplate(String template) {
-  //   return graphList.firstWhere((graph) {
-  //     // print('graph.id: ${graph.id}');
-  //     // print('string template: $template');
-  //     return graph.id == template;
-  //   });
-  // }
 }
 
 class EtlComponentsGraph {
@@ -64,30 +56,21 @@ class EtlComponentsGraph {
   });
 
   factory EtlComponentsGraph.fromJson(Map<String, dynamic> json) {
-    print('EtlJsonGraph.fromJson');
-    print('EtlJsonGraph json type: ${json.runtimeType}');
-
     var graphItems = (json['@graph'] as List).map((graphItem) {
       var graphItemAsList = (graphItem['@type'] as List);
       if (graphItemAsList.contains(jarTemplateType)) {
-        print('typ jarTemplate');
         return EtlJarTemplateItem.fromJson(graphItem);
       } else if (graphItemAsList.contains(templateType)) {
-        print('typ temp');
-        // print('return null');
         return EtlTemplateItem.fromJson(graphItem);
-        // return null;
       } else if (graphItemAsList.contains(inputConfPortType)) {
-        print('typ confPort');
         return EtlPortItem.fromJson(graphItem, EtlPortItemType.inputConf);
       } else if (graphItemAsList.contains(inputPortType)) {
-        print('typ inputPort');
         return EtlPortItem.fromJson(graphItem, EtlPortItemType.input);
       } else if (graphItemAsList.contains(outputPortType)) {
-        print('typ outputPort');
         return EtlPortItem.fromJson(graphItem, EtlPortItemType.output);
+      } else if (graphItemAsList.contains(taskListPortType)) {
+        return EtlPortItem.fromJson(graphItem, EtlPortItemType.taskList);
       }
-      print('graphItem type: ${graphItem['@type']}');
       return null;
     }).toList();
     graphItems.removeWhere((value) => value == null);
@@ -141,7 +124,7 @@ class EtlTemplateItem extends EtlComponentsGraphItem {
   }
 }
 
-enum EtlPortItemType { inputConf, input, output }
+enum EtlPortItemType { inputConf, input, output, taskList }
 
 class EtlPortItem extends EtlComponentsGraphItem {
   final String id;
