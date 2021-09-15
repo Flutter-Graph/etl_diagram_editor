@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 
 class EtlHttp {
   Future<String> getJson(String unencodedPath) async {
-    // String baseUrl = '192.168.97.115:3000';
     String baseUrl = 'demo.etl.linkedpipes.com';
 
     final response = await http.get(
@@ -12,7 +11,9 @@ class EtlHttp {
         baseUrl,
         unencodedPath,
       ),
-      headers: {'Content-Type': 'application/json; charset=utf-8'},
+      headers: {
+        'Accept': 'application/ld+json; charset=utf-8',
+      },
     );
 
     if (response.statusCode == 200) {
